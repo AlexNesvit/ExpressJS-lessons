@@ -1,32 +1,25 @@
 const express = require("express");
 const app = express();
 
-const welcome = (req, res) => {
-  res.send("Welcome to my favourite movie list");
-};
+const movies = [
+  { id: 1, title: "Inception" },
+  { id: 2, title: "The Matrix" },
+  { id: 3, title: "Interstellar" },
+];
 
-app.get("/", welcome);
-
-const movies = [/* ... */];
-
-const getMovies = (req, res) => {
+app.get("/api/movies", (req, res) => {
   res.json(movies);
-};
+});
 
-app.get("/api/movies", getMovies);
+app.get("/api/movies/:id", (req, res) => {
+  const movieId = parseInt(req.params.id, 10);
+  const movie = movies.find((m) => m.id === movieId);
 
-const getMovieById = (req, res) => {
-  const id = parseInt(req.params.id);
-
-  const movie = movies.find((movie) => movie.id === id);
-
-  if (movie != null) {
+  if (movie) {
     res.json(movie);
   } else {
-    res.sendStatus(404);
+    res.status(404).send({ error: "Movie not found" });
   }
-};
-
-app.get("/api/movies/:id", getMovieById);
+});
 
 module.exports = app;
