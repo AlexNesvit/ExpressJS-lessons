@@ -261,6 +261,177 @@ app.get("/api/cocktails", getCocktails);
 Accède à `localhost:3010/api/cocktails` et tu devrais voir la liste des cocktails au format `JSON` ! 
 
 
+## Express 01.1 - 🧪 TDD
+
+### ⚙️ Passons à l'installation
+
+Étape 1 : Commence par ouvrir ta quête précédente avec ta route `GET` et par créer une nouvelle branche `quest_2.1_test` :
+
+`git switch -c quest_2.1_test`
+
+Étape 2 : Dans un second temps, installe le framework de test `jest` (l'un des plus populaire en `JS`) :
+
+`npm install --save-dev jest`
+
+Étape 3 : Dans un troisième temps, ajoute la librairie `supertest` :
+
+`npm install --save-dev supertest`
+
+Une fois les modules installés, nous allons modifier le package`.json`. Dans la partie `script`, remplacer la commande `exécutée` lors du `npm run test` par `jest`. Cela nous facilitera la vie par la suite.
+```bash
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest"
+  },
+  ```
+
+## Sans précipitation, commençons par un peu d'architecture.
+
+En effet, organiser correctement ses fichiers de code dès le début est une bonne pratique. Cela te permettra de t'y retrouver plus facilement au fur et à mesure que ton code grandit et se complexifie.
+
+Etape 1 : Structure du serveur
+
+Lorsque je lance des tests, je n'ai pas besoin de faire tourner mon serveur en `localhost:PORT`. J'ai juste besoin d'accéder à mes routes. Pour rappel, faire tourner le serveur express avec `.listen()` sert à recevoir des requêtes depuis l'extérieur.
+On va donc dissocier notre app du `.listen()`.
+Pour cela, crée un fichier `app.js` à coté de ton `index.js`
+
+Dans le fichier créé précedemment, copie le code de ton `index.js`. Supprime ensuite tous les éléments faisant référence au lancement du serveur `(PORT et app.listen())`. Ton fichier doit ressembler à cela (avec le tableau movies qui contient les données de la quête précédente) :
+```bash
+const express = require("express");
+const app = express();
+
+const welcome = (req, res) => {
+  res.send("Welcome to my favourite movie list");
+};
+
+app.get("/", welcome);
+
+const movies = [/* ... */];
+
+const getMovies = (req, res) => {
+  res.json(movies);
+};
+
+app.get("/api/movies", getMovies);
+
+const getMovieById = (req, res) => {
+  const id = parseInt(req.params.id);
+
+  const movie = movies.find((movie) => movie.id === id);
+
+  if (movie != null) {
+    res.json(movie);
+  } else {
+    res.sendStatus(404);
+  }
+};
+
+app.get("/api/movies/:id", getMovieById);
+
+module.exports = app;
+```
+
+Etape 3 : Mise à jour de `index.js`
+
+Dans `index.js`, supprime tous les éléments faisant référence au router (Ce que tu as gardé dans `app.js`) et en haut de ton fichier, pense à require ton app :
+```bash
+const app = require('./app');
+
+const port = 3010;
+
+app
+  .listen(port, () => {
+    console.info(`Server is listening on port ${port}`);
+  })
+  .on("error", (err) => {
+    console.error("Error:", err.message);
+  });
+  ```
+
+Normalement, si tu testes tes routes avec un `npm run dev`, tout fonctionne comme avant. La différence est que les tests que nous allons mettre en place pourront maintenant accéder à nos routes (app) sans écouter sur un port.
+
+## Et maintenant, à nos (vrais) tests
+
+Commence par créer un dossier `tests` pour y mettre tous tes fichiers de test.
+Puis ajoute un fichier `movies.test.js`. Attention, le nom du fichier est fondamental :
+
+`movies` indique à tes collègues quelle partie de code est testée
+test indique à `Jest` d'exécuter ce fichier lors du lancement des tests (`npm run test`). Ce process est automatique. `Jest` va parcourir l'ensemble de nos fichiers à la recherche de cette extension.
+`js` indique que c'est un fichier `JavaScript`
+
+Super !!!
+
+Dans ce fichier, commence par importer supertest et app :
+```bash
+const request = require("supertest");
+const app = require("../app");
+```
+
+Etape 1 : Pour commencer une série de tests, on commence par écrire `describe`.
+
+`describe` est une fonction issue de la librairie Jest. Comme tous les outils de Jest, elle est disponible même si Jest n'est pas explicitement importée dans le fichier. La fonction `describe` accepte 2 arguments. Le premier est une `chaîne de caractères décrivant` pour le développeur la série de tests qui va être effectuée. Le deuxième est `une fonction "callback" à exécuter`.
+```bash
+const request = require("supertest");
+const app = require("../app");
+
+describe("GET /api/movies", () => {
+});
+```
+
+Etape 2 : Dans la fonction fléchée, on va initialiser un test via `it`.
+
+On utilisera une fonction `it` par test à réaliser dans notre série de tests.
+
+it est une fonction issue de la librairie Jest également. Elle accepte 2 arguments. Le premier est une chaîne de caractères décrivant pour le développeur le test en question qui va être effectué. Le deuxième est une fonction "callback" à exécuter.
+
+Astuce : la convention veut que nous profitions du mot clé it pour écrire une phrase intelligible (it should return all movies, Cela doit retourner tous les films)
+
+Dans notre cas, nous allons tester des requêtes sur notre api maison. Notre callback va donc être asynchrone.
+```bash
+const request = require("supertest");
+const app = require("../app");
+
+describe("GET /api/movies", () => {
+  it("should return all movies", async () => {
+    /** Code your test here */
+  });
+});
+```
+
+Etape 3 : Entrons dans la logique de notre test. Je veux tester le résultat de ma requête `GET api/movies`. Pour cela, nous allons utiliser la fonction `request` de l'import.
+
+`request` est une fonction issue de la librairie supertest. Elle accepte 1 argument. Celui-ci est le point d'entrée de notre `api`, soit `app` (en import) dans notre cas présent. On peut ensuite enchaîner les opérations. Nous allons donc `get()` notre route `/api/movies` et mémoriser la response dans une variable pour pouvoir l'analyser dans un second temps.
+```bash
+const request = require("supertest");
+const app = require("../app");
+
+describe("GET /api/movies", () => {
+  it("should return all movies", async () => {
+    const response = await request(app).get("/api/movies");
+  });
+});
+```
+
+Etape 4 : On peut maintenant tester le résultat de notre requête. Pour cela, on va utiliser la méthode `expect()` de Jest et valider nos attentes ("expectation" en anglais). On peut en demander autant que l'on veut. Une par condition de test.
+```bash
+const request = require("supertest");
+const app = require("../app");
+
+describe("GET /api/movies", () => {
+  it("should return all movies", async () => {
+    const response = await request(app).get("/api/movies");
+
+    expect(response.headers["content-type"]).toMatch(/json/);
+    expect(response.status).toEqual(200);
+  });
+});
+```
+Et c'est fini : tu n'as plus qu'à lancer la commande `npm run test` pour exécuter la série de test.
+
+
+
+
 
 
 
