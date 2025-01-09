@@ -286,6 +286,71 @@ Une fois les modules installés, nous allons modifier le package`.json`. Dans la
   },
   ```
 
+## Sans précipitation, commençons par un peu d'architecture.
+
+En effet, organiser correctement ses fichiers de code dès le début est une bonne pratique. Cela te permettra de t'y retrouver plus facilement au fur et à mesure que ton code grandit et se complexifie.
+
+Etape 1 : Structure du serveur
+
+Lorsque je lance des tests, je n'ai pas besoin de faire tourner mon serveur en `localhost:PORT`. J'ai juste besoin d'accéder à mes routes. Pour rappel, faire tourner le serveur express avec `.listen()` sert à recevoir des requêtes depuis l'extérieur.
+On va donc dissocier notre app du `.listen()`.
+Pour cela, crée un fichier `app.js` à coté de ton `index.js`
+
+Dans le fichier créé précedemment, copie le code de ton `index.js`. Supprime ensuite tous les éléments faisant référence au lancement du serveur `(PORT et app.listen())`. Ton fichier doit ressembler à cela (avec le tableau movies qui contient les données de la quête précédente) :
+```bash
+const express = require("express");
+const app = express();
+
+const welcome = (req, res) => {
+  res.send("Welcome to my favourite movie list");
+};
+
+app.get("/", welcome);
+
+const movies = [/* ... */];
+
+const getMovies = (req, res) => {
+  res.json(movies);
+};
+
+app.get("/api/movies", getMovies);
+
+const getMovieById = (req, res) => {
+  const id = parseInt(req.params.id);
+
+  const movie = movies.find((movie) => movie.id === id);
+
+  if (movie != null) {
+    res.json(movie);
+  } else {
+    res.sendStatus(404);
+  }
+};
+
+app.get("/api/movies/:id", getMovieById);
+
+module.exports = app;
+```
+
+Etape 3 : Mise à jour de `index.js`
+
+Dans `index.js`, supprime tous les éléments faisant référence au router (Ce que tu as gardé dans `app.js`) et en haut de ton fichier, pense à require ton app :
+```bash
+const app = require('./app');
+
+const port = 3010;
+
+app
+  .listen(port, () => {
+    console.info(`Server is listening on port ${port}`);
+  })
+  .on("error", (err) => {
+    console.error("Error:", err.message);
+  });
+  ```
+
+Normalement, si tu testes tes routes avec un `npm run dev`, tout fonctionne comme avant. La différence est que les tests que nous allons mettre en place pourront maintenant accéder à nos routes (app) sans écouter sur un port.
+
 ## Et maintenant, à nos (vrais) tests
 
 Commence par créer un dossier `tests` pour y mettre tous tes fichiers de test.
@@ -363,6 +428,7 @@ describe("GET /api/movies", () => {
 });
 ```
 Et c'est fini : tu n'as plus qu'à lancer la commande `npm run test` pour exécuter la série de test.
+
 
 
 
