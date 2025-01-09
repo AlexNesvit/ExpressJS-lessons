@@ -26,6 +26,20 @@ Express Lessons est un projet éducatif conçu pour apprendre les bases et les f
 
 ## 💯 Bien joué ! Tu peux maintenant utiliser Express!
 
+## 🏗️ Créer ton application express
 
+Étape 1 : Crée un fichier javascript pour contenir tout le code de ton application. Appelons-le `index.js`. Dans ce fichier, importe express :
+
+`const express = require('express');`
+
+Étape 2 : Crée une application en appelant le module express. La convention est de l'appeler app :
+
+`const app = express();`
+
+➡️ Maintenant, nous avons accès à de nombreuses méthodes express en utilisant app.METHOD (ex : app.get(), app.post(), etc...)
+
+    👌🏻 Tu peux trouver la liste des méthodes disponibles sur la [documentation d'express](https://expressjs.com/fr/4x/api.html).
+
+Étape 3 : Crée une constante pour stocker le numéro du port sur lequel ton serveur sera disponible. Pour cet exemple, utilisons le port 5000.
 
 
