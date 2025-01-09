@@ -1,0 +1,54 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+logs/*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS-specific files (macOS)
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# IDEs and editors
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Test coverage
+coverage/
+
+# Build outputs
+dist/
+out/
+
+# Dependency directories
+jspm_packages/
+
+# Others
+*.bak
+*.swp
+*.tmp
+*~
