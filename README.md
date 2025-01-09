@@ -91,6 +91,90 @@ C'est une pratique courante de réserver le `script start` pour la prodution, et
 
 Étape 3: Utilise `npm run dev` pour démarrer le serveur.
 
+## 🛣️ Créer une route
+
+Le routage consiste à déterminer comment une application répond à une `requête du client` vers une `route de l'application`. On parle également de `"point d'entrée"`, ou `endpoint` en anglais. Un `point d'entrée` est un chemin d'URL (`/, /about, contact, etc.`) associé une méthode de requête HTTP spécifique (`GET, POST, etc.`).
+
+La définition des routes devrait ressembler à ceci :
+
+`app.METHOD(PATH, HANDLER)`
+
+
+
+    app est une instance d'Express.
+
+    `METHOD` est une méthode de requête `HTTP`. (`GET, POST, PUT, DELETE`)
+
+    `PATH` est un chemin sur le serveur.
+
+    `HANDLER` est la fonction exécutée lorsque le chemin est reconnu
+
+
+### Créons une route GET !
+
+Quand quelqu'un fait une requête `GET` vers la racine de notre serveur, nous voulons envoyer comme réponse `"Welcome to Express"`. Donc en partant de `app.METHOD(PATH, HANDLER)` :
+
+La METHOD est `get` :
+
+`app.get(PATH, HANDLER);`
+
+Le PATH est `/` :
+
+`app.get("/", HANDLER)`
+
+Le HANDLER doit envoyer `"Welcome to Express"` :
+```bash
+app.get("/", (req, res) => {
+
+  res.send("Welcome to Express");
+
+});
+```
+Maintenant, va sur `localhost:3010` : tu dois voir `"Welcome to Express"` s'afficher.
+
+##  Allons plus loin:
+
+
+### ⚙️ HANDLER
+
+Le `HANDLER` est une fonction exécutée lorsque la route est déclenchée par une `requête`. Tu verras souvent dans la documentation ou les forums cette fonction `"fusionnée"` avec la déclaration de la route :
+
+`app.get('/search', (req, res) => {});`
+
+Jusqu'à ce que tu sois vraiment à l'aise avec `Express`, il est important de séparer dans ton esprit la déclaration de la `route` et le `HANDLER`. C'est pourquoi nous préférerons dans ce module écrire :
+```bash
+const handler = (req, res) => {};
+
+app.get("/search", handler);
+```
+Le `HANDLER` prend 2 paramètres, correspondant à 2 objets HTTP définis dans `Express` :
+
+un objet de type `Request` (par convention, le paramètre est appelé `request` ou plus souvent `req`)
+
+un objet de type `Response` (par convention, le paramètre est appelé `response` ou plus souvent `res`)
+
+Chacun de ces objets a de nombreuses `méthodes` et `propriétés`.
+
+ex: `response.send("Welcome to Express");`
+
+### ❓Request
+
+L'objet de requête représente la requête `HTTP`. Il contient des informations telles que :
+
+l'en-tête `HTTP`,
+
+Le corps de la requête (ce qui est envoyé avec la requête),
+
+Données de formulaire,
+
+Paramètres de l'URL et `query string`, ...
+
+
+
+
+
+
+
 
 
 
