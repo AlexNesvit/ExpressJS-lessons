@@ -188,6 +188,83 @@ La partie `:name` est le marqueur d'un paramètre : `:` est le préfixe qui marq
 
 Change le nom à la fin de l'url et tu devrais voir un nouveau nom quand la page se rafraîchit.
 
+### ❗Response
+
+L'objet `response` représente la `réponse HTTP` que le serveur envoie au client.
+Il peut contenir des données, des messages (validation, erreur), ou simplement un état correspondant à l'état de la requête traitée par le serveur. 
+
+Tu peux vérifier toutes les `méthodes` et propriétés disponibles pour l'objet de `requête` sur la documentation d'Express :
+
+Voici quelques `méthodes` utiles de l'objet Response :
+
+`res.send` permet d'envoyer des données `String, Object, Array, Buffer`
+
+```bash
+(req, res) => {
+  res.send(‘Validated’);
+};
+```
+
+`res.status` pour joindre un message de statut dans la réponse. Généralement combiné avec le `"send"`:
+```bash
+(req, res) => {
+  res.status(404).send(‘Cannot find /foo’);
+};
+```
+
+
+`res.sendStatus` pour n'envoyer que le statut de la requête:
+```bash
+(req, res) => {
+  res.sendStatus(200);
+};
+```
+
+`res.json` pour envoyer un objet au format `JSON`:
+```bash
+(req, res) => {
+  res.json({ result: ‘10 items found’ });
+};
+```
+
+`res.end` permet de terminer la requête sans envoyer de données particulières:
+```bash
+(req, res) => {
+  res.end(); // or res.status(404).end();
+};
+```
+
+Habituellement, quand nous créons un serveur, nous utilisons une réponse formatée en `JSON`. Imaginons que l'utilisateur veuille accéder à un catalogue de cocktails.
+
+En accédant à `/api/cocktails` le serveur lui renverra un `JSON` avec tous les cocktails disponibles.
+```bash
+const cocktails = [
+  {
+    id: 1,
+    name: "Margarita",
+  },
+  {
+    id: 2,
+    name: "Mojito",
+  },
+  {
+    id: 3,
+    name: "Cuba Libre",
+  },
+];
+const getCocktails = (req, res) => {
+  res.status(200).json(cocktails);
+};
+app.get("/api/cocktails", getCocktails);
+```
+
+Accède à `localhost:3010/api/cocktails` et tu devrais voir la liste des cocktails au format `JSON` ! 
+
+
+
+
+
+
 
 
 
