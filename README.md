@@ -170,6 +170,24 @@ Données de formulaire,
 Paramètres de l'URL et `query string`, ...
 
 
+### req.params
+
+Tu peux capturer certaines valeurs de l'URL en utilisant `req.params`. Imaginons que tu veuilles accéder à un profil d'utilisateur spécifique, en utilisant son nom comme référence.
+
+Tu peux marquer la présence d'un paramètre dans le path de la route : on accédera à la valeur de ce paramètre en utilisant `req.params`.
+
+Faisons cela ! Créons une nouvelle route :
+```bash
+const welcomeName = (req, res) => {
+  res.send(`Welcome ${req.params.name}`);
+};
+
+app.get("/users/:name", welcomeName);
+```
+La partie `:name` est le marqueur d'un paramètre : `:` est le préfixe qui marque un paramètre, `name` est ici le nom du paramètre (le nom d'un utilisateur dans notre exemple). Maintenant, navigue vers `localhost:3010/users/Bob`. Tu devrais voir `"Welcome Bob"`.
+
+Change le nom à la fin de l'url et tu devrais voir un nouveau nom quand la page se rafraîchit.
+
 
 
 
