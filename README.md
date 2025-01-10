@@ -464,6 +464,21 @@ Commence par installer `dotenv` dans ton projet :
 
 `npm install dotenv`
 
+Tu vas maintenant créer ton fichier `.env`. Tu ne devras pas le partager sur GitHub, car il contiendra bientôt des informations sensibles (mot de passe de la base de données par exemple). Mais si tu ne le partages pas, comment les `"cloneurs"` de ton projet sauront-ils ce qui doit être déclaré dans le fichier ? Une autre bonne pratique consiste à partager un exemple de fichier au lieu du véritable `.env`. Le fichier d'exemple permettra aux cloneurs de savoir quelles variables doivent être déclarées pour ton application. C'est pourquoi tu peux voir un fichier `.env.sample` à la racine du projet. Copie-le :
+
+`cp .env.sample .env`
+
+Et ajoute ce `.env` à ton `.gitignore`. Regarde maintenant ton fichier `index.js.` Pour utiliser le module `dotenv`, tu dois ajouter cette ligne en haut de ton fichier :
+
+`require("dotenv").config();`
+
+Cela chargera ton fichier `.env` et remplira `process.env` avec toutes tes variables.
+Maintenant, tu peux consommer la variable `APP_PORT` comme suit:
+
+`const port = process.env.APP_PORT;`
+
+Maintenant que ton environnement est configuré, tu peux exécuter `npm run dev`, aller sur `localhost:3010` et vérifier que ton serveur est en cours d'exécution.
+
 
 
 
