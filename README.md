@@ -485,7 +485,36 @@ Maintenant que ton environnement est configuré, tu peux exécuter `npm run dev`
 Nous avons déjà préparé pour toi une petite `base de données` contenant des films et des utilisateurs. Tu peux prendre le temps de regarder le fichier `express_quests.sql` à la racine du projet.
 
 Ouvre un terminal dans le répertoire où se trouve le fichier, ouvre un client MySQL dans ton terminal (avec la commande `mysql`). Crée une nouvelle base de données appelée `express_quests` avec `CREATE DATABASE` puis sélectionne cette base de données avec `USE` :
+```bash
+mysql -u root -p;
+root;
+CREATE DATABASE express_quests;
+USE express_quests;
+```
 
+Et source le fichier pour créer les tables:
+
+`source express_quests.sql`
+
+Exécute maintenant cette requête :
+
+`SELECT * FROM movies;`
+
+Tu devrais voir ceci dans ton terminal :
+mysql> SELECT * FROM movies;
++----+----------------------+----------------------+------+-------+----------+
+| id | title                | director             | year | color | duration |
++----+----------------------+----------------------+------+-------+----------+
+|  1 | Citizen Kane         | Orson Wells          | 1941 | 0     |      120 |
+|  2 | The Godfather        | Francis Ford Coppola | 1972 | 1     |      180 |
+|  3 | Pulp Fiction         | Quentin Tarantino    | 1994 | 1     |      180 |
+|  4 | Apocalypse Now       | Francis Ford Coppola | 1979 | 1     |      150 |
+|  5 | 2001 a space odyssey | Stanley Kubrick      | 1968 | 1     |      160 |
+|  6 | The Dark Knight      | Christopher Nolan    | 2008 | 1     |      150 |
++----+----------------------+----------------------+------+-------+----------+
+6 rows in set (0,00 sec)
+
+Maintenant, tu peux quitter mysql en utilisant `exit`.
 
 
 
