@@ -430,6 +430,40 @@ describe("GET /api/movies", () => {
 Et c'est fini : tu n'as plus qu'à lancer la commande `npm run test` pour exécuter la série de test.
 
 
+## ⚙️ Mise en place de l'application Express
+
+Commence par `forker` ce dépôt sur ton compte GitHub. `Clone` ensuite ton `fork` sur ta machine. Jette un œil au code : c'est la même application que celle que tu as créée dans la quête précédente, sauf que les gestionnaires de films ont été déplacés dans un fichier séparé `src/controllers/movieControllers.js`. De cette manière, notre `src/app.js` se charge uniquement de déclarer les routes :
+```bash
+const express = require("express");
+
+
+const app = express();
+
+
+const movieControllers = require("./controllers/movieControllers");
+
+
+app.get("/api/movies", movieControllers.getMovies);
+
+app.get("/api/movies/:id", movieControllers.getMovieById);
+
+
+module.exports = app;
+```
+
+Nous allons ajouter plus de routes dans notre application : il est important d'organiser le code avant qu'il ne devienne trop gros.
+
+Comme tu t'en souviens, nous utilisons le port 3010 dans notre application comme port par défaut sur lequel le serveur écoutera. Mais s'il n'est pas disponible, tu peux le changer pour autre chose ! Cela peut être utile pour éviter les conflits de port avec une autre application en cours d'exécution sur ta machine qui utilise déjà le port 3010.
+Note que c'est une bonne pratique de gérer cela via un fichier d'environnement : un fichier `.env` contenant ta configuration spécifique. Ce fichier `.env` peut alors être chargé en utilisant le module `dotenv`.
+
+`Dotenv` est un module sans dépendance qui charge les variables d'environnement à partir d'un fichier `.env` dans `process.env`. Cela nous permet de stocker des informations sensibles (noms d'utilisateur, mots de passe, tokens...) dans un fichier `.env` qui ne sera pas envoyé sur GitHub. Par convention, les variables d'environnement sont en MAJUSCULES, pour faire la différence avec les variables classiques.
+
+Si tu modifies le port dans ton fichier `.env` et que tu lui donnes la valeur `5001` par exemple, garde simplement à l'esprit que tu devras te rendre sur `localhost:5001` au lieu de `localhost:3010` lorsque tu vois un lien `"localhost"` dans les quêtes.
+
+Commence par installer `dotenv` dans ton projet :
+
+`npm install dotenv`
+
 
 
 
