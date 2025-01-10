@@ -517,6 +517,27 @@ mysql> SELECT * FROM movies;
 Maintenant, tu peux quitter mysql en utilisant `exit`.
 
 
+## 📦 Installer le module MySQL 2
+
+Pour communiquer avec ta base de données, tu dois installer un module appelé `mysql2` :
+
+`npm install mysql2`
+
+
+### ⚙️ Configurer l'accès à la base de données
+
+Pour configurer le package afin d'accéder à la base de données, tu dois ajouter des variables à ton fichier `.env`, avec toutes les informations nécessaires pour te connecter à la base de données :
+```bash
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=REPLACE_WITH_YOUR_USERNAME
+DB_PASSWORD=REPLACE_WITH_YOUR_PASSWORD
+DB_NAME=REPLACE_BY_DB_NAME
+```
+
+
+
+
 
 
 
