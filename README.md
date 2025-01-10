@@ -480,6 +480,12 @@ Maintenant, tu peux consommer la variable `APP_PORT` comme suit:
 Maintenant que ton environnement est configuré, tu peux exécuter `npm run dev`, aller sur `localhost:3010` et vérifier que ton serveur est en cours d'exécution.
 
 
+### 🗄️ Créer la base de données
+
+Nous avons déjà préparé pour toi une petite `base de données` contenant des films et des utilisateurs. Tu peux prendre le temps de regarder le fichier `express_quests.sql` à la racine du projet.
+
+Ouvre un terminal dans le répertoire où se trouve le fichier, ouvre un client MySQL dans ton terminal (avec la commande `mysql`). Crée une nouvelle base de données appelée `express_quests` avec `CREATE DATABASE` puis sélectionne cette base de données avec `USE` :
+
 
 
 

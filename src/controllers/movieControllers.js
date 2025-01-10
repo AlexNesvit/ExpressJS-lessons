@@ -1,25 +1,47 @@
 const movies = [
-    { id: 1, title: "Inception" },
-    { id: 2, title: "The Matrix" },
-    { id: 3, title: "Interstellar" },
+    {
+      id: 1,
+      title: "Citizen Kane",
+      director: "Orson Wells",
+      year: "1941",
+      color: false,
+      duration: 120,
+    },
+    {
+      id: 2,
+      title: "The Godfather",
+      director: "Francis Ford Coppola",
+      year: "1972",
+      color: true,
+      duration: 180,
+    },
+    {
+      id: 3,
+      title: "Pulp Fiction",
+      director: "Quentin Tarantino",
+      year: "1994",
+      color: true,
+      duration: 180,
+    },
   ];
   
-  // Экспортируем функцию для получения всех фильмов
   const getMovies = (req, res) => {
     res.json(movies);
   };
   
-  // Экспортируем функцию для получения фильма по ID
   const getMovieById = (req, res) => {
-    const movieId = parseInt(req.params.id, 10);
-    const movie = movies.find((m) => m.id === movieId);
+    const id = parseInt(req.params.id);
   
-    if (movie) {
+    const movie = movies.find((movie) => movie.id === id);
+  
+    if (movie != null) {
       res.json(movie);
     } else {
-      res.status(404).send({ error: "Movie not found" });
+      res.status(404).send("Not Found");
     }
   };
   
-  // Экспорт функций
-  module.exports = { getMovies, getMovieById };
+  module.exports = {
+    getMovies,
+    getMovieById,
+  };
