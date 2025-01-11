@@ -534,6 +534,54 @@ DB_USER=REPLACE_WITH_YOUR_USERNAME
 DB_PASSWORD=REPLACE_WITH_YOUR_PASSWORD
 DB_NAME=REPLACE_BY_DB_NAME
 ```
+Sur certains OS, `localhost` devra être remplacé par `127.0.0.1` (en savoir plus).
+
+N'oublie pas de remplacer les valeurs par celles qui conviennent à ta base de données.
+Le port `MySQL` par défaut est `3306`, mais selon la façon dont tu l'as installé et configuré, cela pourrait être autre chose ! (`3309` avec une installation `Docker`)
+
+Note que tu dois également mettre à jour ton fichier `.env.sample` avec les lignes ci-dessus. Conserve les fausses valeurs `REPLACE_WITH_...` pour celui-ci.
+Ton fichier `.env.sample` doit toujours refléter le vrai fichier `.env`, mais toujours avec des exemples de valeurs et non avec de vraies valeurs.
+
+Maintenant, jouons avec le module `mysql2`.
+Crée un nouveau fichier nommé `database.js` à côté de ton `index.js`.
+
+Tout en haut, nous devons importer le package `dotenv` et exécuter `config()`. Cela définira pour nous toutes les variables d'environnement que nous avons décrites dans le fichier `.env`.
+
+`require("dotenv").config();`
+
+Ensuite, importe le package `mysql2` :
+
+`const mysql = require("mysql2/promise");`
+
+Enfin, utilise `mysql.createPool` pour préparer un pool de connexion à l'aide des variables d'environnement que tu viens de créer :
+```bash
+require("dotenv").config();
+
+const mysql = require("mysql2/promise");
+
+const database = mysql.createPool({
+  host: process.env.DB_HOST, // address of the server
+  port: process.env.DB_PORT, // port of the DB server (mysql), not to be confused with the APP_PORT !
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
+```
+Tu peux essayer d'obtenir une première connexion depuis le pool pour vérifier que tout va bien :
+```bash
+database
+  .getConnection()
+  .then(() => {
+    console.log("Can reach database");
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+  ```
+Et lancez la commande suivante :
+
+`npx nodemon database.js`
+
 
 
 
