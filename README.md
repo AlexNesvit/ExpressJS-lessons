@@ -582,7 +582,70 @@ Et lancez la commande suivante :
 
 `npx nodemon database.js`
 
+### 💬 Écrire une requête
 
+En utilisant notre `objet` database, nous pouvons envoyer des requêtes à notre serveur `MySQL` en utilisant la méthode `query()`.
+La méthode a besoin d'une chaîne de caractères comme premier paramètre : le code SQL de notre requête.
+Puisque nous utilisons la version avec des promesses, nous devrons chaîner l'appel à `query()` avec un `.then()` (et un `.catch()` pour intercepter les erreurs).
+
+Dans database.js essaye les lignes suivantes :
+```bash
+database
+  .query("select * from movies")
+  .then((result) => {
+    console.log(result);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+  ```
+
+
+
+👉🏻 Il n'est pas obligatoire d'utiliser la méthode `getConnection()` : faire une requête créera aussi automatiquement une connexion. Cependant, il est recommandé de l'utiliser pour déboguer ton serveur en cas d'échec de la connexion.
+
+Lors du rechargement du script, tu devrais voir beaucoup de choses dans ton terminal.
+En prêtant attention, tu verras que `result` est un tableau contenant les lignes sélectionnées comme premier élément.
+Le reste du tableau contient des informations supplémentaires concernant la requête. Nous allons nous concentrer sur les lignes sélectionnées et les extraire du tableau `result` : 
+ ```bash
+ database
+  .query("select * from movies")
+  .then((result) => {
+    const movies = result[0];
+
+    console.log(movies);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+  ```
+
+ Ou, en utilisant la déstructuration de tableau :
+ ```bash
+ database
+  .query("select * from movies")
+  .then((result) => {
+    const [movies] = result;
+
+    console.log(movies);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+  ```
+ Ou directement en destructurant le paramètre :
+ ```bash
+ database
+  .query("select * from movies")
+  .then(([movies]) => {
+    console.log(movies);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+  ``` 
+
+Si tout s'est bien passé, tu devrais voir les films s'afficher dans ta console.
 
 
 
