@@ -26,7 +26,7 @@ database
     })
 
     .catch((err) => {
-        console.error(err);
+        console.error("Database connection error:", err.message);
     });
 
 module.exports = database;
