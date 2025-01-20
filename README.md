@@ -671,6 +671,48 @@ Pour compléter le `console.error` lorsque des erreurs sont trouvées, nous envo
 Maintenant, arrête le script `database` (`Ctrl+C`) et exécute `npm run dev`. Si tu vas sur `localhost:3010/api/movies`, tu devrais voir la liste des films de ta base de données.
 
 
+### 💬 Écrire une requête avec un paramètre
+
+Maintenant, ta fonction `getMovieById` devrait également être mise à jour pour trouver un film dans la base de données. Tu voudras peut-être faire quelque chose comme ceci :
+```bash
+const getMovieById = (req, res) => {
+  const id = parseInt(req.params.id);
+
+  database
+    .query(`select * from movies where id = ${id}`)
+    .then(...)
+    .catch(...);
+}
+```
+
+Cette façon d'injecter l'`id` dans une requête `SQL` n'est pas sûre : tu devrais utiliser des requêtes préparées à la place. Cela signifie que tu devras remplacer chaque variable dans ta chaîne SQL par un ?. Ensuite, les valeurs à injecter seront passées dans un tableau en tant que second paramètre de `query()`. Quelque chose comme ca :
+```bash
+const getMovieById = (req, res) => {
+  const id = parseInt(req.params.id);
+
+  database
+    .query("select * from movies where id = ?", [id])
+    .then(([movies]) => {
+      if (movies[0] != null) {
+        res.json(movies[0]);
+      } else {
+        res.sendStatus(404);
+      }
+    })
+
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+};
+```
+Essaye de compléter le `then` et le `catch` toi-même, sachant que tu dois renvoyer un seul objet film si le film recherché existe (pas de tableau). Sinon, tu dois renvoyer un statut `404` si le film recherché n'existe pas. Renvoie un statut `500` si tu as détecté une erreur.
+
+
+
+
+
+
 
 
 
