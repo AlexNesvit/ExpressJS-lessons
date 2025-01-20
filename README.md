@@ -647,6 +647,28 @@ Le reste du tableau contient des informations supplémentaires concernant la req
 
 Si tout s'est bien passé, tu devrais voir les films s'afficher dans ta console.
 
+Maintenant, déplaçons ce morceau de code dans la fonction `getMovies` que nous avons défini dans `movieControllers.js` (n'oublie pas d'ajouter `module.exports = database;` à la fin de `database.js` ) :
+```bash
+const database = require("../../database");
+
+const getMovies = (req, res) => {
+
+  database
+
+    .query("select * from movies")
+    .then(([movies]) => {
+      res.json(movies); // use res.json instead of console.log
+    })
+
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+};
+```
+Pour compléter le `console.error` lorsque des erreurs sont trouvées, nous envoyons un statut `500` au client. Sinon, nous pouvons renvoyer un statut `200` et les données.
+
+Maintenant, arrête le script `database` (`Ctrl+C`) et exécute `npm run dev`. Si tu vas sur `localhost:3010/api/movies`, tu devrais voir la liste des films de ta base de données.
 
 
 
