@@ -709,7 +709,18 @@ const getMovieById = (req, res) => {
 Essaye de compléter le `then` et le `catch` toi-même, sachant que tu dois renvoyer un seul objet film si le film recherché existe (pas de tableau). Sinon, tu dois renvoyer un statut `404` si le film recherché n'existe pas. Renvoie un statut `500` si tu as détecté une erreur.
 
 
+### 📬 Postman
 
+Jusqu'à présent, tu utilisais ton navigateur Web pour vérifier les réponses du serveur. Dans les prochaines quêtes, nous allons également faire des requêtes POST pour ajouter des objets dans notre base de données.
+
+Parce que tu n'as pas encore de frontend, il va être difficile de faire ces requêtes POST depuis ton navigateur. Pour gérer cela, tu peux installer un logiciel appelé Postman.
+
+Postman est un excellent outil que tu peux utiliser pour tester tes routes.
+
+Une fois téléchargé et installé, ouvre le logiciel et crée une nouvelle requête HTTP (bouton "+" après l'onglet "Overview").
+
+Dans la section "url", tapez l'url de ton serveur, `localhost:3010/api/movies` et assure toi que GET est sélectionné puis clique sur envoyer.
+Tu devrais voir la réponse de ton serveur.
 
 
 
