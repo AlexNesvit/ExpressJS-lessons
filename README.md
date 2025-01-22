@@ -723,6 +723,26 @@ Dans la section "url", tapez l'url de ton serveur, `localhost:3010/api/movies` e
 Tu devrais voir la réponse de ton serveur.
 
 
+### 🤼 Deux types de requête GET
+
+Bien que le terme CRUD soit largement utilisé, il ignore une différence importante entre deux types de requêtes GET :
+
+    Une application peut avoir besoin de récupérer un ensemble de ressources, par exemple, une liste de films. Pour cela, tu peux utiliser l'URL localhost:5000/api/movies.
+    Elle peut, au contraire, nécessiter de récupérer une ressource, par exemple un seul film. Dans ce cas, tu pourrais ajouter un / suivi d'une valeur pour identifier précisément la ressource ciblée. Cela peut être son id, comme dans `http://localhost:3010/api/movies/2`.
+
+🤷🏻‍♀️ Pourquoi deux types de requêtes GET?
+
+Si tu peux récupérer une liste directement, en quoi cela t'aiderait de récupérer une seule ressource ?
+
+L'une des motivations est de maintenir la cohérence de l'`API REST`.
+
+Dans une API REST, des routes doivent exister pour permettre la mise à jour ou la suppression d'une ressource. 
+
+
+
+
+
+
 
 
 
