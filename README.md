@@ -852,7 +852,7 @@ Et tu as récupéré les détails du film dans HANDLER via `req.body`.
 
 Maintenant, nous voulons gérer des requêtes de mise à jour des ressources, comme celle-ci :
 ```bash
-PUT http://localhost:5000/api/movies/2
+PUT http://localhost:3010/api/movies/2
 Content-type: application/json
 
 {
