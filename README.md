@@ -819,6 +819,53 @@ Passons à la dernière partie du puzzle. Si tu lis cette page (et que tu la met
 ## Express 03 - 🛸 Méthode PUT et modification des données
 
 
+### 💾 Comment créer un HANDLER de routes PUT avec Express ?
+
+Une pratique courante consiste à utiliser les verbes HTTP PUT ou PATCH pour spécifier que nous voulons modifier quelque chose qui existe déjà dans la base de données. Par souci de simplicité, nous n'utiliserons que PUT pour le moment.
+
+Encore une fois, d'une certaine manière, tu sais déjà quoi faire. Auparavant, face à une requête comme celle-ci :
+
+`GET http://localhost:3010/api/movies/2`
+
+Tu as déclaré une route pour y répondre comme ceci :
+
+`app.get("/api/movies/:id", HANDLER);`
+
+Ensuite dans le HANDLER, tu as récupéré le 2 de l'URL via `req.params.id`.
+
+Face à ce genre de requête :
+```bash
+POST http://localhost:3010/api/movies
+Content-type: application/json
+{
+  "title": "Citizen Kane",
+  "director": "Orson Wells",
+  "year": "1941",
+  "color": "0",
+  "duration": 120
+}
+```
+Tu as déclaré ta route comme ceci :
+`app.post("/api/movies", HANDLER);`
+
+Et tu as récupéré les détails du film dans HANDLER via `req.body`.
+
+Maintenant, nous voulons gérer des requêtes de mise à jour des ressources, comme celle-ci :
+```bash
+PUT http://localhost:5000/api/movies/2
+Content-type: application/json
+
+{
+  "title": "Citizen Kane",
+  "director": "Orson Wells",
+  "year": "1941",
+  "color": "0",
+  "duration": 120
+}
+```
+
+
+
 
 
 
