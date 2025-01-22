@@ -430,6 +430,398 @@ describe("GET /api/movies", () => {
 Et c'est fini : tu n'as plus qu'à lancer la commande `npm run test` pour exécuter la série de test.
 
 
+## ⚙️ Mise en place de l'application Express
+
+Commence par `forker` ce dépôt sur ton compte GitHub. `Clone` ensuite ton `fork` sur ta machine. Jette un œil au code : c'est la même application que celle que tu as créée dans la quête précédente, sauf que les gestionnaires de films ont été déplacés dans un fichier séparé `src/controllers/movieControllers.js`. De cette manière, notre `src/app.js` se charge uniquement de déclarer les routes :
+```bash
+const express = require("express");
+
+
+const app = express();
+
+
+const movieControllers = require("./controllers/movieControllers");
+
+
+app.get("/api/movies", movieControllers.getMovies);
+
+app.get("/api/movies/:id", movieControllers.getMovieById);
+
+
+module.exports = app;
+```
+
+Nous allons ajouter plus de routes dans notre application : il est important d'organiser le code avant qu'il ne devienne trop gros.
+
+Comme tu t'en souviens, nous utilisons le port 3010 dans notre application comme port par défaut sur lequel le serveur écoutera. Mais s'il n'est pas disponible, tu peux le changer pour autre chose ! Cela peut être utile pour éviter les conflits de port avec une autre application en cours d'exécution sur ta machine qui utilise déjà le port 3010.
+Note que c'est une bonne pratique de gérer cela via un fichier d'environnement : un fichier `.env` contenant ta configuration spécifique. Ce fichier `.env` peut alors être chargé en utilisant le module `dotenv`.
+
+`Dotenv` est un module sans dépendance qui charge les variables d'environnement à partir d'un fichier `.env` dans `process.env`. Cela nous permet de stocker des informations sensibles (noms d'utilisateur, mots de passe, tokens...) dans un fichier `.env` qui ne sera pas envoyé sur GitHub. Par convention, les variables d'environnement sont en MAJUSCULES, pour faire la différence avec les variables classiques.
+
+Si tu modifies le port dans ton fichier `.env` et que tu lui donnes la valeur `5001` par exemple, garde simplement à l'esprit que tu devras te rendre sur `localhost:5001` au lieu de `localhost:3010` lorsque tu vois un lien `"localhost"` dans les quêtes.
+
+Commence par installer `dotenv` dans ton projet :
+
+`npm install dotenv`
+
+Tu vas maintenant créer ton fichier `.env`. Tu ne devras pas le partager sur GitHub, car il contiendra bientôt des informations sensibles (mot de passe de la base de données par exemple). Mais si tu ne le partages pas, comment les `"cloneurs"` de ton projet sauront-ils ce qui doit être déclaré dans le fichier ? Une autre bonne pratique consiste à partager un exemple de fichier au lieu du véritable `.env`. Le fichier d'exemple permettra aux cloneurs de savoir quelles variables doivent être déclarées pour ton application. C'est pourquoi tu peux voir un fichier `.env.sample` à la racine du projet. Copie-le :
+
+`cp .env.sample .env`
+
+Et ajoute ce `.env` à ton `.gitignore`. Regarde maintenant ton fichier `index.js.` Pour utiliser le module `dotenv`, tu dois ajouter cette ligne en haut de ton fichier :
+
+`require("dotenv").config();`
+
+Cela chargera ton fichier `.env` et remplira `process.env` avec toutes tes variables.
+Maintenant, tu peux consommer la variable `APP_PORT` comme suit:
+
+`const port = process.env.APP_PORT;`
+
+Maintenant que ton environnement est configuré, tu peux exécuter `npm run dev`, aller sur `localhost:3010` et vérifier que ton serveur est en cours d'exécution.
+
+
+### 🗄️ Créer la base de données
+
+Nous avons déjà préparé pour toi une petite `base de données` contenant des films et des utilisateurs. Tu peux prendre le temps de regarder le fichier `express_quests.sql` à la racine du projet.
+
+Ouvre un terminal dans le répertoire où se trouve le fichier, ouvre un client MySQL dans ton terminal (avec la commande `mysql`). Crée une nouvelle base de données appelée `express_quests` avec `CREATE DATABASE` puis sélectionne cette base de données avec `USE` :
+```bash
+mysql -u root -p;
+root;
+CREATE DATABASE express_quests;
+USE express_quests;
+```
+
+Et source le fichier pour créer les tables:
+
+`source express_quests.sql`
+
+Exécute maintenant cette requête :
+
+`SELECT * FROM movies;`
+
+Tu devrais voir ceci dans ton terminal :
+mysql> SELECT * FROM movies;
++----+----------------------+----------------------+------+-------+----------+
+| id | title                | director             | year | color | duration |
++----+----------------------+----------------------+------+-------+----------+
+|  1 | Citizen Kane         | Orson Wells          | 1941 | 0     |      120 |
+|  2 | The Godfather        | Francis Ford Coppola | 1972 | 1     |      180 |
+|  3 | Pulp Fiction         | Quentin Tarantino    | 1994 | 1     |      180 |
+|  4 | Apocalypse Now       | Francis Ford Coppola | 1979 | 1     |      150 |
+|  5 | 2001 a space odyssey | Stanley Kubrick      | 1968 | 1     |      160 |
+|  6 | The Dark Knight      | Christopher Nolan    | 2008 | 1     |      150 |
++----+----------------------+----------------------+------+-------+----------+
+6 rows in set (0,00 sec)
+
+Maintenant, tu peux quitter mysql en utilisant `exit`.
+
+
+## 📦 Installer le module MySQL 2
+
+Pour communiquer avec ta base de données, tu dois installer un module appelé `mysql2` :
+
+`npm install mysql2`
+
+
+### ⚙️ Configurer l'accès à la base de données
+
+Pour configurer le package afin d'accéder à la base de données, tu dois ajouter des variables à ton fichier `.env`, avec toutes les informations nécessaires pour te connecter à la base de données :
+```bash
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=REPLACE_WITH_YOUR_USERNAME
+DB_PASSWORD=REPLACE_WITH_YOUR_PASSWORD
+DB_NAME=REPLACE_BY_DB_NAME
+```
+Sur certains OS, `localhost` devra être remplacé par `127.0.0.1` (en savoir plus).
+
+N'oublie pas de remplacer les valeurs par celles qui conviennent à ta base de données.
+Le port `MySQL` par défaut est `3306`, mais selon la façon dont tu l'as installé et configuré, cela pourrait être autre chose ! (`3309` avec une installation `Docker`)
+
+Note que tu dois également mettre à jour ton fichier `.env.sample` avec les lignes ci-dessus. Conserve les fausses valeurs `REPLACE_WITH_...` pour celui-ci.
+Ton fichier `.env.sample` doit toujours refléter le vrai fichier `.env`, mais toujours avec des exemples de valeurs et non avec de vraies valeurs.
+
+Maintenant, jouons avec le module `mysql2`.
+Crée un nouveau fichier nommé `database.js` à côté de ton `index.js`.
+
+Tout en haut, nous devons importer le package `dotenv` et exécuter `config()`. Cela définira pour nous toutes les variables d'environnement que nous avons décrites dans le fichier `.env`.
+
+`require("dotenv").config();`
+
+Ensuite, importe le package `mysql2` :
+
+`const mysql = require("mysql2/promise");`
+
+Enfin, utilise `mysql.createPool` pour préparer un pool de connexion à l'aide des variables d'environnement que tu viens de créer :
+```bash
+require("dotenv").config();
+
+const mysql = require("mysql2/promise");
+
+const database = mysql.createPool({
+  host: process.env.DB_HOST, // address of the server
+  port: process.env.DB_PORT, // port of the DB server (mysql), not to be confused with the APP_PORT !
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
+```
+Tu peux essayer d'obtenir une première connexion depuis le pool pour vérifier que tout va bien :
+```bash
+database
+  .getConnection()
+  .then(() => {
+    console.log("Can reach database");
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+  ```
+Et lancez la commande suivante :
+
+`npx nodemon database.js`
+
+### 💬 Écrire une requête
+
+En utilisant notre `objet` database, nous pouvons envoyer des requêtes à notre serveur `MySQL` en utilisant la méthode `query()`.
+La méthode a besoin d'une chaîne de caractères comme premier paramètre : le code SQL de notre requête.
+Puisque nous utilisons la version avec des promesses, nous devrons chaîner l'appel à `query()` avec un `.then()` (et un `.catch()` pour intercepter les erreurs).
+
+Dans database.js essaye les lignes suivantes :
+```bash
+database
+  .query("select * from movies")
+  .then((result) => {
+    console.log(result);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+  ```
+
+
+
+👉🏻 Il n'est pas obligatoire d'utiliser la méthode `getConnection()` : faire une requête créera aussi automatiquement une connexion. Cependant, il est recommandé de l'utiliser pour déboguer ton serveur en cas d'échec de la connexion.
+
+Lors du rechargement du script, tu devrais voir beaucoup de choses dans ton terminal.
+En prêtant attention, tu verras que `result` est un tableau contenant les lignes sélectionnées comme premier élément.
+Le reste du tableau contient des informations supplémentaires concernant la requête. Nous allons nous concentrer sur les lignes sélectionnées et les extraire du tableau `result` : 
+ ```bash
+ database
+  .query("select * from movies")
+  .then((result) => {
+    const movies = result[0];
+
+    console.log(movies);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+  ```
+
+ Ou, en utilisant la déstructuration de tableau :
+ ```bash
+ database
+  .query("select * from movies")
+  .then((result) => {
+    const [movies] = result;
+
+    console.log(movies);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+  ```
+ Ou directement en destructurant le paramètre :
+ ```bash
+ database
+  .query("select * from movies")
+  .then(([movies]) => {
+    console.log(movies);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+  ``` 
+
+Si tout s'est bien passé, tu devrais voir les films s'afficher dans ta console.
+
+Maintenant, déplaçons ce morceau de code dans la fonction `getMovies` que nous avons défini dans `movieControllers.js` (n'oublie pas d'ajouter `module.exports = database;` à la fin de `database.js` ) :
+```bash
+const database = require("../../database");
+
+const getMovies = (req, res) => {
+
+  database
+
+    .query("select * from movies")
+    .then(([movies]) => {
+      res.json(movies); // use res.json instead of console.log
+    })
+
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+};
+```
+Pour compléter le `console.error` lorsque des erreurs sont trouvées, nous envoyons un statut `500` au client. Sinon, nous pouvons renvoyer un statut `200` et les données.
+
+Maintenant, arrête le script `database` (`Ctrl+C`) et exécute `npm run dev`. Si tu vas sur `localhost:3010/api/movies`, tu devrais voir la liste des films de ta base de données.
+
+
+### 💬 Écrire une requête avec un paramètre
+
+Maintenant, ta fonction `getMovieById` devrait également être mise à jour pour trouver un film dans la base de données. Tu voudras peut-être faire quelque chose comme ceci :
+```bash
+const getMovieById = (req, res) => {
+  const id = parseInt(req.params.id);
+
+  database
+    .query(`select * from movies where id = ${id}`)
+    .then(...)
+    .catch(...);
+}
+```
+
+Cette façon d'injecter l'`id` dans une requête `SQL` n'est pas sûre : tu devrais utiliser des requêtes préparées à la place. Cela signifie que tu devras remplacer chaque variable dans ta chaîne SQL par un ?. Ensuite, les valeurs à injecter seront passées dans un tableau en tant que second paramètre de `query()`. Quelque chose comme ca :
+```bash
+const getMovieById = (req, res) => {
+  const id = parseInt(req.params.id);
+
+  database
+    .query("select * from movies where id = ?", [id])
+    .then(([movies]) => {
+      if (movies[0] != null) {
+        res.json(movies[0]);
+      } else {
+        res.sendStatus(404);
+      }
+    })
+
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+};
+```
+Essaye de compléter le `then` et le `catch` toi-même, sachant que tu dois renvoyer un seul objet film si le film recherché existe (pas de tableau). Sinon, tu dois renvoyer un statut `404` si le film recherché n'existe pas. Renvoie un statut `500` si tu as détecté une erreur.
+
+
+### 📬 Postman
+
+Jusqu'à présent, tu utilisais ton navigateur Web pour vérifier les réponses du serveur. Dans les prochaines quêtes, nous allons également faire des requêtes POST pour ajouter des objets dans notre base de données.
+
+Parce que tu n'as pas encore de frontend, il va être difficile de faire ces requêtes POST depuis ton navigateur. Pour gérer cela, tu peux installer un logiciel appelé Postman.
+
+Postman est un excellent outil que tu peux utiliser pour tester tes routes.
+
+Une fois téléchargé et installé, ouvre le logiciel et crée une nouvelle requête HTTP (bouton "+" après l'onglet "Overview").
+
+Dans la section "url", tapez l'url de ton serveur, `localhost:3010/api/movies` et assure toi que GET est sélectionné puis clique sur envoyer.
+Tu devrais voir la réponse de ton serveur.
+
+
+### 🤼 Deux types de requête GET
+
+Bien que le terme CRUD soit largement utilisé, il ignore une différence importante entre deux types de requêtes GET :
+
+    Une application peut avoir besoin de récupérer un ensemble de ressources, par exemple, une liste de films. Pour cela, tu peux utiliser l'URL localhost:5000/api/movies.
+    Elle peut, au contraire, nécessiter de récupérer une ressource, par exemple un seul film. Dans ce cas, tu pourrais ajouter un / suivi d'une valeur pour identifier précisément la ressource ciblée. Cela peut être son id, comme dans `http://localhost:3010/api/movies/2`.
+
+🤷🏻‍♀️ Pourquoi deux types de requêtes GET?
+
+Si tu peux récupérer une liste directement, en quoi cela t'aiderait de récupérer une seule ressource ?
+
+L'une des motivations est de maintenir la cohérence de l'`API REST`.
+
+Dans une API REST, des routes doivent exister pour permettre la mise à jour ou la suppression d'une ressource. 
+
+
+### 📬 Comment créer une route POST avec Express ?
+
+D'une certaine manière, tu connais déjà la réponse... Si tu te souviens de cette requête :
+`GET http://localhost:3010/api/movies`
+
+Tu as déclaré une route pour y répondre comme ceci :
+`app.get("/api/movies", HANDLER);`
+
+Maintenant, tu veux gérer les requêtes de création de ressources, comme celle-ci :
+```bash
+POST http://localhost:3010/api/movies
+Content-type: application/json
+
+{
+  "title": "Citizen Kane",
+  "director": "Orson Wells",
+  "year": "1941",
+  "color": "0",
+  "duration": 120
+}
+```
+
+### Middle-quoi ?
+
+Par définition, un middleware est un logiciel (ou une fonction) qui sera appelé entre deux parties d'un logiciel (ou deux opérations, ou deux applications).
+
+Une application utilisant Express n'est rien d'autre qu'une succession d'appels middleware.
+
+Ne t'inquiète pas si les middlewares sont encore un peu déroutants pour le moment, nous les verrons et les pratiquerons plus tard.
+
+Ce que tu dois garder à l'esprit, c'est que `express.json()` est un middleware que nous utilisons au tout début de notre code pour nous assurer que toutes nos routes sont capables de lire un corps de requête au format JSON.
+Insérer des données dans ta base de données
+
+Dans les épisodes précédents, tu as utilisé des requêtes SELECT : maintenant nous devons INSÉRER des données.
+
+Dans ta fonction pour poster, utilise la déstructuration d'objet pour créer une variable pour chaque propriété de `req.body`.
+```bash
+const postMovie = (req, res) => {
+  const { title, director, year, color, duration } = req.body;
+};
+```
+
+
+👌🏻 En extrayant toutes les variables, nous nous assurons de n'envoyer à notre base de données que les informations que nous souhaitons `INSÉRER`.
+
+L'étape suivante consiste à utiliser database.query pour écrire ta requête `INSERT`. Cela devrait commencer comme ceci :
+```bash
+const postMovie = (req, res) => {
+  const { title, director, year, color, duration } = req.body;
+
+  database
+    .query(
+      "INSERT INTO movies(title, director, year, color, duration) VALUES (?, ?, ?, ?, ?)",
+      [title, director, year, color, duration]
+    )
+    .then(([result]) => {
+      // wait for it
+    })
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+};
+```
+
+Note que nous utilisons plusieurs `?` près du mot-clé `SQL VALUES`. Ces points d'interrogation seront remplacés par le module `mysql2` avant que la requête ne soit réellement envoyée à la base de données. C'est là que les valeurs du tableau en deuxième argument seront utilisées. Attention, l'ordre des éléments dans le tableau compte ! Le premier point d'interrogation sera remplacé par le premier élément du tableau et ainsi de suite...
+
+En regardant la partie `then`, c'est là que nous obtenions précédemment les lignes sélectionnées lors de l'exécution d'une requête `SELECT`. Mais nous effectuons maintenant une requête `INSERT` : le résultat est ici le résultat d'une insertion. Si tu le `console.log()`, tu seras peut-être intéressé par `result.insertId` qui stocke l'identifiant auto-incrémenté de la ressource insérée.
+
+Passons à la dernière partie du puzzle. Si tu lis cette page (et que tu la mets dans tes favoris), tu sauras qu'une requête `POST` doit renvoyer :
+
+    le statut HTTP "Created"
+    un en-tête Location pointant vers la nouvelle ressource (quelque chose comme /api/movies/ suivi de l'identifiant d'insertion)... cette partie ajouterait beaucoup de complexité et est donc rarement suivie dans l'usage : nous allons privilégier un objet contenant l'id.
+
+`res.status(/* ??? */).send({ id: /* ??? */ });`
+
+
+## Express 03 - 🛸 Méthode PUT et modification des données
+
+
+
+
+
 
 
 
