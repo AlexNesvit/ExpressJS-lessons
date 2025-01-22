@@ -739,6 +739,87 @@ L'une des motivations est de maintenir la cohérence de l'`API REST`.
 Dans une API REST, des routes doivent exister pour permettre la mise à jour ou la suppression d'une ressource. 
 
 
+### 📬 Comment créer une route POST avec Express ?
+
+D'une certaine manière, tu connais déjà la réponse... Si tu te souviens de cette requête :
+`GET http://localhost:3010/api/movies`
+
+Tu as déclaré une route pour y répondre comme ceci :
+`app.get("/api/movies", HANDLER);`
+
+Maintenant, tu veux gérer les requêtes de création de ressources, comme celle-ci :
+```bash
+POST http://localhost:3010/api/movies
+Content-type: application/json
+
+{
+  "title": "Citizen Kane",
+  "director": "Orson Wells",
+  "year": "1941",
+  "color": "0",
+  "duration": 120
+}
+```
+
+### Middle-quoi ?
+
+Par définition, un middleware est un logiciel (ou une fonction) qui sera appelé entre deux parties d'un logiciel (ou deux opérations, ou deux applications).
+
+Une application utilisant Express n'est rien d'autre qu'une succession d'appels middleware.
+
+Ne t'inquiète pas si les middlewares sont encore un peu déroutants pour le moment, nous les verrons et les pratiquerons plus tard.
+
+Ce que tu dois garder à l'esprit, c'est que `express.json()` est un middleware que nous utilisons au tout début de notre code pour nous assurer que toutes nos routes sont capables de lire un corps de requête au format JSON.
+Insérer des données dans ta base de données
+
+Dans les épisodes précédents, tu as utilisé des requêtes SELECT : maintenant nous devons INSÉRER des données.
+
+Dans ta fonction pour poster, utilise la déstructuration d'objet pour créer une variable pour chaque propriété de `req.body`.
+```bash
+const postMovie = (req, res) => {
+  const { title, director, year, color, duration } = req.body;
+};
+```
+
+
+👌🏻 En extrayant toutes les variables, nous nous assurons de n'envoyer à notre base de données que les informations que nous souhaitons `INSÉRER`.
+
+L'étape suivante consiste à utiliser database.query pour écrire ta requête `INSERT`. Cela devrait commencer comme ceci :
+```bash
+const postMovie = (req, res) => {
+  const { title, director, year, color, duration } = req.body;
+
+  database
+    .query(
+      "INSERT INTO movies(title, director, year, color, duration) VALUES (?, ?, ?, ?, ?)",
+      [title, director, year, color, duration]
+    )
+    .then(([result]) => {
+      // wait for it
+    })
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+};
+```
+
+Note que nous utilisons plusieurs `?` près du mot-clé `SQL VALUES`. Ces points d'interrogation seront remplacés par le module `mysql2` avant que la requête ne soit réellement envoyée à la base de données. C'est là que les valeurs du tableau en deuxième argument seront utilisées. Attention, l'ordre des éléments dans le tableau compte ! Le premier point d'interrogation sera remplacé par le premier élément du tableau et ainsi de suite...
+
+En regardant la partie `then`, c'est là que nous obtenions précédemment les lignes sélectionnées lors de l'exécution d'une requête `SELECT`. Mais nous effectuons maintenant une requête `INSERT` : le résultat est ici le résultat d'une insertion. Si tu le `console.log()`, tu seras peut-être intéressé par `result.insertId` qui stocke l'identifiant auto-incrémenté de la ressource insérée.
+
+Passons à la dernière partie du puzzle. Si tu lis cette page (et que tu la mets dans tes favoris), tu sauras qu'une requête `POST` doit renvoyer :
+
+    le statut HTTP "Created"
+    un en-tête Location pointant vers la nouvelle ressource (quelque chose comme /api/movies/ suivi de l'identifiant d'insertion)... cette partie ajouterait beaucoup de complexité et est donc rarement suivie dans l'usage : nous allons privilégier un objet contenant l'id.
+
+`res.status(/* ??? */).send({ id: /* ??? */ });`
+
+
+## Express 03 - 🛸 Méthode PUT et modification des données
+
+
+
 
 
 
